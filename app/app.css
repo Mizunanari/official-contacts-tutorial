@@ -64,6 +64,7 @@ button:active {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
+  align-items: center;
 }
 #contact h1 form {
   display: flex;
@@ -81,7 +82,7 @@ button:active {
 }
 #contact h1 form button[value="true"]:hover,
 #contact h1 form button[value="false"] {
-  color: #eeb004;
+  color: #04ee23;
 }
 
 form[action$="destroy"] button {
@@ -193,7 +194,7 @@ body {
 
 #sidebar nav a span {
   float: right;
-  color: #eeb004;
+  color: #04ee23;
 }
 #sidebar nav a.active span {
   color: inherit;

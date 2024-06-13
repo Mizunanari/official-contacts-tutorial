@@ -19,8 +19,8 @@ import appStylesHref from "./app.css";
 import { createEmptyContact, getContacts } from "./data";
 
 export const action = async () => {
-  const contact = await createEmptyContact();
-  return redirect(`/contacts/${contact.id}/edit`);
+  const todolists = await createEmptyContact();
+  return redirect(`/todolists/${todolists.id}/edit`);
 };
 
 export const links: LinksFunction = () => [
@@ -30,12 +30,12 @@ export const links: LinksFunction = () => [
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
-  const contacts = await getContacts(q);
-  return json({ contacts, q });
+  const todolists = await getContacts(q);
+  return json({ todolists, q });
 };
 
 export default function App() {
-  const { contacts, q } = useLoaderData<typeof loader>();
+  const { todolists, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const submit = useSubmit();
   const searching =
@@ -70,7 +70,7 @@ export default function App() {
               role="search"
             >
               <input
-                aria-label="Search contacts"
+                aria-label="Search todolists"
                 className={searching ? "loading" : ""}
                 defaultValue={q || ""}
                 id="q"
@@ -85,31 +85,31 @@ export default function App() {
             </Form>
           </div>
           <nav>
-            {contacts.length ? (
+            {todolists.length ? (
               <ul>
-                {contacts.map((contact) => (
-                  <li key={contact.id}>
+                {todolists.map((todolists) => (
+                  <li key={todolists.id}>
                     <NavLink
                       className={({ isActive, isPending }) =>
                         isActive ? "active" : isPending ? "pending" : ""
                       }
-                      to={`contacts/${contact.id}`}
+                      to={`todolists/${todolists.id}`}
                     >
-                      {contact.first || contact.last ? (
+                      {todolists.title ? (
                         <>
-                          {contact.first} {contact.last}
+                          {todolists.title}
                         </>
                       ) : (
-                        <i>No Name</i>
+                          <i>No Title</i>
                       )}{" "}
-                      {contact.favorite ? <span>★</span> : null}
+                      {todolists.completed ? <span>☑️</span> : null}
                     </NavLink>
                   </li>
                 ))}
               </ul>
             ) : (
               <p>
-                <i>No contacts</i>
+                  <i>No card</i>
               </p>
             )}
           </nav>

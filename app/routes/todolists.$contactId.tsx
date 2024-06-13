@@ -3,60 +3,50 @@ import { json } from "@remix-run/node";
 import { Form, useFetcher, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import type { ContactRecord } from "../data";
+// import type { ContactRecord } from "../data";
+import type { TodoRecord } from "../data";
 import { getContact, updateContact } from "../data";
 
 export const action = async ({ params, request }: ActionArgs) => {
   invariant(params.contactId, "Missing contactId param");
   const formData = await request.formData();
   return updateContact(params.contactId, {
-    favorite: formData.get("favorite") === "true",
+    completed: formData.get("completed") === "true",
   });
+
 };
 
 export const loader = async ({ params }: LoaderArgs) => {
   invariant(params.contactId, "Missing contactId param");
-  const contact = await getContact(params.contactId);
-  if (!contact) {
+  const todo = await getContact(params.contactId);
+  if (!todo) {
     throw new Response("Not Found", { status: 404 });
   }
-  return json({ contact });
+  return json({ todo });
 };
 
 export default function Contact() {
-  const { contact } = useLoaderData<typeof loader>();
+  const { todo } = useLoaderData<typeof loader>();
 
   return (
     <div id="contact">
       <div>
-        <img
-          alt={`${contact.first} ${contact.last} avatar`}
-          key={contact.avatar}
-          src={contact.avatar}
-        />
-      </div>
-
-      <div>
         <h1>
-          {contact.first || contact.last ? (
+          {todo.title ? (
             <>
-              {contact.first} {contact.last}
+              {todo.title}
             </>
           ) : (
-            <i>No Name</i>
+            <i>No Card</i>
           )}{" "}
-          <Favorite contact={contact} />
+          <Completed todo={todo} />
         </h1>
 
-        {contact.twitter ? (
+        {todo.description ? (
           <p>
-            <a href={`https://twitter.com/${contact.twitter}`}>
-              {contact.twitter}
-            </a>
+            {todo.description}
           </p>
         ) : null}
-
-        {contact.notes ? <p>{contact.notes}</p> : null}
 
         <div>
           <Form action="edit">
@@ -83,20 +73,20 @@ export default function Contact() {
   );
 }
 
-function Favorite({ contact }: { contact: Pick<ContactRecord, "favorite"> }) {
+function Completed({ todo }: { todo: Pick<TodoRecord, "completed"> }) {
   const fetcher = useFetcher();
-  const favorite = fetcher.formData
-    ? fetcher.formData.get("favorite") === "true"
-    : contact.favorite;
+  const completed = fetcher.formData
+    ? fetcher.formData.get("completed") === "true"
+    : todo.completed;
 
   return (
     <fetcher.Form method="post">
       <button
-        aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
-        name="favorite"
-        value={favorite ? "false" : "true"}
+        aria-label={completed ? "Remove from completed" : "Add to completed"}
+        name="completed"
+        value={completed ? "false" : "true"}
       >
-        {favorite ? "★" : "☆"}
+        {completed ? "☑" : "☐️"}
       </button>
     </fetcher.Form>
   );
